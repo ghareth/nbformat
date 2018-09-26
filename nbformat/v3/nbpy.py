@@ -100,12 +100,14 @@ class PyReader(NotebookReader):
         nb = new_notebook(worksheets=[ws])
         return nb
 
+    #replaced
     def new_cell(self, state, lines, **kwargs):
         if state == u'codecell':
             input = u'\n'.join(lines)
             input = input.strip(u'\n')
             if input:
-                return new_code_cell(input=input)
+                kwargs['input'] = input
+                return new_code_cell(**kwargs)
         elif state == u'htmlcell':
             text = self._remove_comments(lines)
             if text:
@@ -113,7 +115,8 @@ class PyReader(NotebookReader):
         elif state == u'markdowncell':
             text = self._remove_comments(lines)
             if text:
-                return new_text_cell(u'markdown',source=text)
+                kwargs['source'] = text
+                return new_text_cell(u'markdown', **kwargs)
         elif state == u'rawcell':
             text = self._remove_comments(lines)
             if text:
