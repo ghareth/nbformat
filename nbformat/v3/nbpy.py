@@ -90,6 +90,21 @@ class PyReader(NotebookReader):
                     state = u'codecell'
                     kwargs = {}
                     cell_lines = []
+            # added        
+            elif line.startswith(u'#!'):
+                kwargs['metadata'] = {"nbsphinx": "hidden"}
+            elif line.startswith(u'# <metadata>'):
+                metadata_state = True
+            elif line.startswith(u'# </metadata>'):
+                meta_content = {}
+                for each in cell_lines:
+                    each_line = each.split(":", 1)
+                    key = each_line[0].replace('#', "").replace('"', "").replace("'", "").strip()
+                    value = each_line[1].replace('"', "").replace("'", "").strip()
+                    kwargs['metadata'] = {key:value}
+                cell_lines = []
+                metadata_state = False
+            # end added
             else:
                 cell_lines.append(line)
         if cell_lines and state == u'codecell':
