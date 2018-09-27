@@ -105,8 +105,24 @@ class PyReader(NotebookReader):
                 cell_lines = []
                 metadata_state = False
             # end added
+            elif line.startswith(u'# #'):
+                cell = self.new_cell(state, cell_lines, **kwargs)
+                if cell is not None:
+                    cells.append(cell)
+
+                state = u'markdowncell'
+                cell_lines = [line]
+                kwargs['metadata'] = {"slideshow": {"slide_type": "slide"}}
+                cell = self.new_cell(state, cell_lines, **kwargs)
+                if cell is not None:
+                    cells.append(cell)
+
+                state = u'markdowncell'
+                cell_lines = []
+                kwargs = {}
             else:
                 cell_lines.append(line)
+
         if cell_lines and state == u'codecell':
             cell = self.new_cell(state, cell_lines)
             if cell is not None:
